@@ -14,7 +14,7 @@
     <script type="text/javascript" src="./jquery-ui-1.10.0.custom.js"></script>
 
     <script type="text/javascript">
-    var cacheJson = "./reports/2011-revenue.json";
+    var cacheJson = "./reports/2011-revenue-inverted.json";
     $(document).ready(function () 
     {
     	//Scott Traver
@@ -91,13 +91,13 @@
 	<div id="graphical">
 
 	</div>
-	<p>
+	<!--<p>
 		<label for="amount">Budget range:</label>
 		<input type="text" id="amount" style="border:0; color:#f6931f; font-weight:bold;" />
 	</p>
 	<div id="slider-range"></div>
 	
-	<select id="reports"></select>
+	<select id="reports"></select>-->
 		
 </div>
 	
@@ -105,7 +105,7 @@
 <div id="rightBody">
 	<div class="ui-corner-all uml-box">
 		<h3>Information</h3>
-			<ul>
+			<ul id="info">
 				<li>Item:&nbsp;&nbsp;<span id="budgetItem"></span></li>
 				<li>Amount:&nbsp;&nbsp;<span id="budgetAmount"></span></li>
 			</ul>
