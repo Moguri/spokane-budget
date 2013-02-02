@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="./sitecss.css"/>
+	<link rel="stylesheet" type="text/css" href="./jquery-ui-1.10.0.custom/development-bundle/themes/base/jquery.ui.base.css"/>
+	<link rel="stylesheet" type="text/css" href="./jquery-ui-1.10.0.custom/development-bundle/themes/base/jquery.ui.all.css"/>
+	<title>SpoCode: Spokane Budget Visual</title>
+
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    
+    <script type="text/javascript" src="./d3.js"></script>
+    <script type="text/javascript" src="./layout.js"></script>
+    <script type="text/javascript" src="./jquery-1.9.0.js"></script>
+    <script type="text/javascript" src="./jquery-ui-1.10.0.custom.js"></script>
+
+    <script type="text/javascript">
+    var cacheJson = "./reports/2011-revenue.json";
+    $(document).ready(function () 
+    {
+    	//Scott Traver
+    	$(".clickable").click(function () 
+    	{
+    		alert($(this).parents('g').find(".rectdata").attr("name") + " \n " + $(this).parents('g').find(".rectdata").attr("size"));
+    	});
+    });
+	
+	Number.prototype.formatMoney = function(c, d, t){
+	var n = this, c = isNaN(c = Math.abs(c)) ? 2 : c, d = d == undefined ? "," : d, t = t == undefined ? "." : t, s = n < 0 ? "-" : "", i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "", j = (j = i.length) > 3 ? j % 3 : 0;
+	   return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+	 };
+    function clickMe(data)//push data to proper lables
+    {
+      //alert(data.name + "\n" + data.size);
+	  $("#budgetItem").text(data.name);
+	  $("#budgetAmount").text('$'+data.size.formatMoney(2, '.', ','));
+    }
+    //slider function
+    $(function() {
+		$( "#slider-range" ).slider({
+			range: true,
+			min: 0,
+			max: 20000,
+			values: [ 0, 20000 ],
+			slide: function( event, ui ) {
+				$( "#amount" ).val( "$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );
+			}
+		});
+		$( "#amount" ).val( "$" + $( "#slider-range" ).slider( "values", 0 ) +
+			" - $" + $( "#slider-range" ).slider( "values", 1 ) );//low and high slider value
+
+	});
+	
+	$(function() {
+		var reports = [
+			"2010-cost",
+			"2010-cost-inverted",
+			"2010-expenditures",
+			"2010-expenditures-inverted",
+			"2010-revenue",
+			"2010-revenue-inverted",
+			"2011-cost",
+			"2011-cost-inverted",
+			"2011-expenditures",
+			"2011-expenditures-inverted",
+			"2011-revenue",
+			"2011-revenue-inverted"
+		];
+	
+		$.each(reports, function(val, text) {
+			$('#reports').append($('<option></option').val(val).html(text))
+		});
+	});
+
+    </script>
+</head>
+<body>
+	
+
+
+	<div id="header">
+		<!-- Header start -->
+		<img src="./Budget-Visulizer.png" /><br />
+		<h1>City of Spokane Budget Breakdown</h1>
+		<!-- Header end -->
+	</div>
+	
+	
+<div id="bodyContainer">
+
+<div id="leftBody">
+	<div id="graphical">
+
+	</div>
+	<p>
+		<label for="amount">Budget range:</label>
+		<input type="text" id="amount" style="border:0; color:#f6931f; font-weight:bold;" />
+	</p>
+	<div id="slider-range"></div>
+	
+	<select id="reports"></select>
+		
+</div>
+	
+	
+<div id="rightBody">
+	<div class="ui-corner-all uml-box">
+		<h3>Information</h3>
+			<ul>
+				<li>Item:&nbsp;&nbsp;<span id="budgetItem"></span></li>
+				<li>Amount:&nbsp;&nbsp;<span id="budgetAmount"></span></li>
+			</ul>
+	</div>
+
+	<script>
+	$(function() { $(".uml-box").draggable(); } );
+	</script>
+</div>
+		
+<div id="disclaimer">
+	<p>
+		The data presented here is collected by running scripts over the City of Spokane line item summary budgets.
+	</p>
+</div>
+</div>
+<script type="text/javascript">
+
+var w = 960 - 60,
+    h = 500 - 135,
+    x = d3.scale.linear().range([0, w]),
+    y = d3.scale.linear().range([0, h]);
+
+var vis = d3.select("#graphical").append("div")
+    .attr("class", "chart")
+    .style("width", w + "px")
+    .style("height", h + "px")
+  .append("svg:svg")
+    .attr("width", w)
+    .attr("height", h);
+
+var partition = d3.layout.partition()
+    .value(function(d) { return d.size; });
+
+d3.json(cacheJson, function(root) {
+  var g = vis.selectAll("g")
+      .data(partition.nodes(root))
+    .enter().append("svg:g")
+      .attr("transform", function(d) { return "translate(" + x(d.y) + "," + y(d.x) + ")"; })
+      .on("click", click)
+      .on("mouseover", function (d) { clickMe(d); });
+
+  var kx = w / root.dx,
+      ky = h / 1;
+
+  g.append("svg:rect")
+      .attr("width", root.dy * kx)
+      .attr("height", function(d) { return d.dx * ky; })
+      .attr("class", function(d) { return d.children ? "parent" : "child"; });
+
+  g.append("svg:text")
+      .attr("transform", transform)
+      .attr("dy", ".35em")
+      .style("opacity", function(d) { return d.dx * ky > 12 ? 1 : 0; })
+      .text(function(d) { return d.name; })
+
+  d3.select(window)
+      .on("click", function() { click(root); })
+
+  function click(d) {
+    if (!d.children) return;
+
+    kx = (d.y ? w - 40 : w) / (1 - d.y);
+    ky = h / d.dx;
+    x.domain([d.y, 1]).range([d.y ? 40 : 0, w]);
+    y.domain([d.x, d.x + d.dx]);
+
+    var t = g.transition()
+        .duration(d3.event.altKey ? 7500 : 750)
+        .attr("transform", function(d) { return "translate(" + x(d.y) + "," + y(d.x) + ")"; });
+
+    t.select("rect")
+        .attr("width", d.dy * kx)
+        .attr("height", function(d) { return d.dx * ky; });
+
+    t.select("text")
+        .attr("transform", transform)
+        .style("opacity", function(d) { return d.dx * ky > 12 ? 1 : 0; });
+
+    d3.event.stopPropagation();
+  }
+
+  function transform(d) {
+    return "translate(8," + d.dx * ky / 2 + ")";
+  }
+});
+
+    </script>
+</body>
+
+</html>

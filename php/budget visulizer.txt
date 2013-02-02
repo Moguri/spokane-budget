@@ -1,0 +1,5 @@
+#00A79D
+#2BB673
+#662D91
+
+font is Avnir Medium
