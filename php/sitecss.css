@@ -30,7 +30,7 @@ body {
 	float: right;
 	width: 28%;
 	background: #662D91;
-	//margin-top: 50px;
+	margin-top: 50px;
 	padding: 10px;
 	/*border-radius: 10px;
 	box-shadow: 5px 5px 10px #999;*/
@@ -79,9 +79,17 @@ rect {
   fill-opacity: .8;
 }
 
+rect:hover {
+	fill: #0AA451;
+}
+
 rect.parent {
   cursor: pointer;
   fill: #00A79D;
+}
+
+rect.parent:hover {
+	fill: #00857B;
 }
 
 text {
