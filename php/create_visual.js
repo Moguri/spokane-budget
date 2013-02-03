@@ -1,4 +1,4 @@
-function create_visual(cacheJson) {
+function create_visual(cacheJson, clickMe) {
 var w = 960 - 60,
     h = 500 - 135,
     x = d3.scale.linear().range([0, w]),

@@ -25,8 +25,6 @@
 			alert($(this).parents('g').find(".rectdata").attr("name") + " \n " + $(this).parents('g').find(".rectdata").attr("size"));
 		});
 
-		create_visual(cacheJson);
-
 		$("#reports").change(function() {
 			$(".chart").remove();
 			create_visual("./reports/"+$(this).find("option:selected").text()+".json");
@@ -80,6 +78,8 @@
 				$('#reports').append($('<option></option').val(val).html(text))
 			});
 		});
+
+		create_visual(cacheJson, clickMe);
 	});
 
     </script>
