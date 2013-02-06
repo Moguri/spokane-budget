@@ -25,22 +25,22 @@
 			alert($(this).parents('g').find(".rectdata").attr("name") + " \n " + $(this).parents('g').find(".rectdata").attr("size"));
 		});
 
-		$("#reports").change(function() {
-			$(".chart").remove();
-			create_visual("./reports/"+$(this).find("option:selected").text()+".json");
-		});
-
-		Number.prototype.formatMoney = function(c, d, t){
-			var n = this, c = isNaN(c = Math.abs(c)) ? 2 : c, d = d == undefined ? "," : d, t = t == undefined ? "." : t, s = n < 0 ? "-" : "", i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "", j = (j = i.length) > 3 ? j % 3 : 0;
-			return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
-		};
-		
 		function clickMe(data)//push data to proper lables
 		{
 			//alert(data.name + "\n" + data.size);
 			$("#budgetItem").text(data.name);
 			$("#budgetAmount").text('$'+data.size.formatMoney(2, '.', ','));
 		}
+
+		$("#reports").change(function() {
+			$(".chart").remove();
+			create_visual("./reports/"+$(this).find("option:selected").text()+".json", clickMe);
+		});
+
+		Number.prototype.formatMoney = function(c, d, t){
+			var n = this, c = isNaN(c = Math.abs(c)) ? 2 : c, d = d == undefined ? "," : d, t = t == undefined ? "." : t, s = n < 0 ? "-" : "", i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "", j = (j = i.length) > 3 ? j % 3 : 0;
+			return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+		};
 		
 		//slider function
 		$(function() {
